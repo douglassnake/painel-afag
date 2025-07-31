@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Financeiro AFAG</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { margin: 20px; background-color: #f8f9fa; }
+    .container { max-width: 960px; margin: auto; }
+    .plot-container { margin-bottom: 40px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center mb-4">Painel Financeiro da AFAG</h2>
+    <select id="anoSelect" class="form-select mb-4" onchange="atualizaGraficos()">
+      <option value="2024" selected>2024</option>
+      <option value="2025">2025</option>
+    </select>
+
+    <div id="graficoEntradas" class="plot-container"></div>
+    <div id="graficoSaidas" class="plot-container"></div>
+    <div id="graficoSaldo" class="plot-container"></div>
+  </div>
+
+  <script>
+    const dados = {
+      "2024": {
+        meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+        entradas: [0, 0, 0, 49755.88, 3500, 1436.28, 0, 0, 0, 0, 62.76, 0],
+        saidas:   [0, 0, 0, 27548.35, 3500, 1420, 0, 0, 0, 0, 4392.55, 0],
+        aplicacoes: [0, 0, 0, 19687.55, 3500, 1436.28, 0, 0, 0, 0, 0, 0],
+        resgates:   [0, 0, 0, 113, 0, 69.05, 0, 0, 0, 0, 3.76, 0],
+        saldo:      [0, 0, 0, 22107.53, 22107.53, 22123.81, 22123.81, 22123.81, 22123.81, 22123.81, 17794.02, 17794.02]
+      },
+      "2025": {
+        meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"],
+        entradas: [12.77, 2.44, 0.45, 6.20, 6.07, 0.99, 1.39],
+        saidas:   [2705.58, 456.30, 70.10, 380.20, 456.52, 72.40, 72.40],
+        aplicacoes: [0, 0, 0, 0, 0, 0, 0],
+        resgates:   [0, 0, 0, 0, 0, 0, 0],
+        saldo:      [34064.13, 31671.85, 31602.20, 31228.00, 30833.55, 30762.14, 30691.13]
+      }
+    };
+
+    function atualizaGraficos() {
+      const ano = document.getElementById("anoSelect").value;
+      const d = dados[ano];
+
+      Plotly.newPlot("graficoEntradas", [{
+        x: d.meses,
+        y: d.entradas,
+        type: "bar",
+        name: "Entradas",
+        marker: { color: "#198754" }
+      }], { title: "Entradas por Mês", yaxis: { title: "R$" } });
+
+      Plotly.newPlot("graficoSaidas", [
+        {
+          x: d.meses,
+          y: d.saidas,
+          type: "bar",
+          name: "Despesas",
+          marker: { color: "#dc3545" }
+        },
+        {
+          x: d.meses,
+          y: d.aplicacoes,
+          type: "bar",
+          name: "Aplicações",
+          marker: { color: "#0d6efd" }
+        },
+        {
+          x: d.meses,
+          y: d.resgates,
+          type: "bar",
+          name: "Resgates",
+          marker: { color: "#ffc107" }
+        }
+      ], {
+        barmode: "group",
+        title: "Despesas, Aplicações e Resgates",
+        yaxis: { title: "R$" }
+      });
+
+      Plotly.newPlot("graficoSaldo", [{
+        x: d.meses,
+        y: d.saldo,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Saldo Mensal",
+        line: { color: "#20c997" }
+      }], { title: "Evolução do Saldo", yaxis: { title: "R$" } });
+    }
+
+    window.onload = atualizaGraficos;
+  </script>
+</body>
+</html>
