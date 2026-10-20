@@ -2,26 +2,102 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Painel Financeiro AFAG</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { margin: 20px; background-color: #f8f9fa; }
-    .container { max-width: 960px; margin: auto; }
+    .container { max-width: 1080px; margin: auto; }
     .plot-container { margin-bottom: 40px; }
+    .summary-card { height: 100%; }
+    .summary-label { font-size: .82rem; color: #6c757d; text-transform: uppercase; letter-spacing: .04em; }
+    .summary-value { font-size: 1.45rem; font-weight: 700; margin-top: .25rem; }
+    .section-title { margin: 2rem 0 1rem; font-size: 1.2rem; font-weight: 700; }
+    .source-note { font-size: .9rem; color: #6c757d; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2 class="text-center mb-4">Painel Financeiro da AFAG</h2>
+    <h2 class="text-center mb-2">Painel Financeiro da AFAG</h2>
+    <p class="text-center text-muted mb-4">
+      Associação de Familiares e Amigos dos Autistas de Guarda-Mor
+    </p>
+
     <select id="anoSelect" class="form-select mb-4" onchange="atualizaGraficos()">
-      <option value="2024" selected>2024</option>
+      <option value="2024">2024</option>
       <option value="2025">2025</option>
+      <option value="2026" selected>2026</option>
     </select>
+
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card summary-card shadow-sm">
+          <div class="card-body">
+            <div class="summary-label">Entradas no período</div>
+            <div id="totalEntradas" class="summary-value text-success">R$ 0,00</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card summary-card shadow-sm">
+          <div class="card-body">
+            <div class="summary-label">Saídas no período</div>
+            <div id="totalSaidas" class="summary-value text-danger">R$ 0,00</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card summary-card shadow-sm">
+          <div class="card-body">
+            <div class="summary-label">Resultado no período</div>
+            <div id="resultadoPeriodo" class="summary-value">R$ 0,00</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card summary-card shadow-sm">
+          <div class="card-body">
+            <div class="summary-label">Saldo final</div>
+            <div id="saldoFinal" class="summary-value">R$ 0,00</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div id="graficoEntradas" class="plot-container"></div>
     <div id="graficoSaidas" class="plot-container"></div>
     <div id="graficoSaldo" class="plot-container"></div>
+
+    <section id="detalhesPrestacao" class="d-none">
+      <h3 class="section-title">Despesas identificadas na prestação de contas</h3>
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th class="text-end">Valor</th>
+            </tr>
+          </thead>
+          <tbody id="despesasIdentificadas"></tbody>
+          <tfoot>
+            <tr class="fw-bold">
+              <td colspan="2">Total das despesas identificadas</td>
+              <td id="totalIdentificadas" class="text-end"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="mb-1">
+        As demais saídas de setembro/2026, no valor de <strong>R$ 233,32</strong>,
+        correspondem a tarifas bancárias e pagamentos de tributos registrados no extrato.
+      </p>
+      <p class="source-note mb-0">
+        Prestação de Contas AFAG com data de corte em 30/09/2026.
+        Presidente: Douglas Souza da Silva. Tesoureiro: Guttierres Jordão de Carvalho.
+      </p>
+    </section>
   </div>
 
   <script>
@@ -29,32 +105,103 @@
       "2024": {
         meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
         entradas: [0, 0, 0, 49755.88, 3500, 1436.28, 0, 0, 0, 0, 62.76, 0],
-        saidas:   [0, 0, 0, 27548.35, 3500, 1420, 0, 0, 0, 0, 4392.55, 0],
+        saidas: [0, 0, 0, 27548.35, 3500, 1420, 0, 0, 0, 0, 4392.55, 0],
         aplicacoes: [0, 0, 0, 19687.55, 3500, 1436.28, 0, 0, 0, 0, 0, 0],
-        resgates:   [0, 0, 0, 113, 0, 69.05, 0, 0, 0, 0, 3.76, 0],
-        saldo:      [0, 0, 0, 22107.53, 22107.53, 22123.81, 22123.81, 22123.81, 22123.81, 22123.81, 17794.02, 17794.02]
+        resgates: [0, 0, 0, 113, 0, 69.05, 0, 0, 0, 0, 3.76, 0],
+        saldo: [0, 0, 0, 22107.53, 22107.53, 22123.81, 22123.81, 22123.81, 22123.81, 22123.81, 17794.02, 17794.02]
       },
       "2025": {
-        meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"],
-        entradas: [12.77, 2.44, 0.45, 6.20, 6.07, 0.99, 1.39],
-        saidas:   [2705.58, 456.30, 70.10, 380.20, 456.52, 72.40, 72.40],
-        aplicacoes: [0, 0, 0, 0, 0, 0, 0],
-        resgates:   [0, 0, 0, 0, 0, 0, 0],
-        saldo:      [34064.13, 31671.85, 31602.20, 31228.00, 30833.55, 30762.14, 30691.13]
+        meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+        entradas: [12.77, 2.44, 0.45, 6.20, 6.07, 0.99, 1.39, 12.15, 2.02, 2.58, 3.37, 3.98],
+        saidas: [2705.58, 456.30, 70.10, 380.20, 456.52, 72.40, 72.40, 420.08, 72.40, 72.40, 73.80, 73.80],
+        aplicacoes: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        resgates: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        saldo: [34064.13, 31671.85, 31602.20, 31228.00, 30833.55, 30762.14, 30691.13, 28515.40, 28445.02, 28375.20, 28304.77, 28234.95]
+      },
+      "2026": {
+        meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set"],
+        entradas: [4.68, 5.34, 20.59, 1401.47, 511.20, 286.74, 347.86, 23.04, 85.54],
+        saidas: [73.80, 73.80, 73.80, 73.80, 73.80, 73.80, 73.80, 73.80, 1801.93],
+        aplicacoes: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        resgates: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        saldo: [28165.83, 28097.37, 28044.16, 29371.83, 29809.23, 30022.17, 30296.23, 30245.47, 28529.08]
       }
     };
+
+    const despesasPrestacao2026 = [
+      { data: "02/09/2026", descricao: "Palestra Marcela", valor: 600.00 },
+      { data: "02/09/2026", descricao: "Lanche palestra", valor: 225.52 },
+      { data: "02/09/2026", descricao: "Registro documentação", valor: 743.09 }
+    ];
+
+    const brl = valor => valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+
+    function soma(valores) {
+      return valores.reduce((total, valor) => total + valor, 0);
+    }
+
+    function atualizaResumo(d) {
+      const entradas = soma(d.entradas);
+      const saidas = soma(d.saidas);
+      const resultado = entradas - saidas;
+      const saldoFinal = d.saldo[d.saldo.length - 1] || 0;
+
+      document.getElementById("totalEntradas").textContent = brl(entradas);
+      document.getElementById("totalSaidas").textContent = brl(saidas);
+
+      const resultadoEl = document.getElementById("resultadoPeriodo");
+      resultadoEl.textContent = brl(resultado);
+      resultadoEl.className = "summary-value " + (resultado >= 0 ? "text-success" : "text-danger");
+
+      document.getElementById("saldoFinal").textContent = brl(saldoFinal);
+    }
+
+    function atualizaDetalhes(ano) {
+      const secao = document.getElementById("detalhesPrestacao");
+      if (ano !== "2026") {
+        secao.classList.add("d-none");
+        return;
+      }
+
+      const tbody = document.getElementById("despesasIdentificadas");
+      tbody.innerHTML = despesasPrestacao2026.map(item => `
+        <tr>
+          <td>${item.data}</td>
+          <td>${item.descricao}</td>
+          <td class="text-end">${brl(item.valor)}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("totalIdentificadas").textContent =
+        brl(soma(despesasPrestacao2026.map(item => item.valor)));
+
+      secao.classList.remove("d-none");
+    }
 
     function atualizaGraficos() {
       const ano = document.getElementById("anoSelect").value;
       const d = dados[ano];
+
+      atualizaResumo(d);
+      atualizaDetalhes(ano);
+
+      const config = { responsive: true, displaylogo: false };
 
       Plotly.newPlot("graficoEntradas", [{
         x: d.meses,
         y: d.entradas,
         type: "bar",
         name: "Entradas",
-        marker: { color: "#198754" }
-      }], { title: "Entradas por Mês", yaxis: { title: "R$" } });
+        marker: { color: "#198754" },
+        hovertemplate: "%{x}<br>Entrada: R$ %{y:,.2f}<extra></extra>"
+      }], {
+        title: `Entradas por Mês — ${ano}`,
+        yaxis: { title: "R$" },
+        margin: { t: 60, r: 20, b: 50, l: 70 }
+      }, config);
 
       Plotly.newPlot("graficoSaidas", [
         {
@@ -80,9 +227,10 @@
         }
       ], {
         barmode: "group",
-        title: "Despesas, Aplicações e Resgates",
-        yaxis: { title: "R$" }
-      });
+        title: `Despesas, Aplicações e Resgates — ${ano}`,
+        yaxis: { title: "R$" },
+        margin: { t: 60, r: 20, b: 50, l: 70 }
+      }, config);
 
       Plotly.newPlot("graficoSaldo", [{
         x: d.meses,
@@ -90,8 +238,13 @@
         type: "scatter",
         mode: "lines+markers",
         name: "Saldo Mensal",
-        line: { color: "#20c997" }
-      }], { title: "Evolução do Saldo", yaxis: { title: "R$" } });
+        line: { color: "#20c997" },
+        hovertemplate: "%{x}<br>Saldo: R$ %{y:,.2f}<extra></extra>"
+      }], {
+        title: `Evolução do Saldo — ${ano}`,
+        yaxis: { title: "R$" },
+        margin: { t: 60, r: 20, b: 50, l: 70 }
+      }, config);
     }
 
     window.onload = atualizaGraficos;
